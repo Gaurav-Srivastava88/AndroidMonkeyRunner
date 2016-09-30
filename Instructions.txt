@@ -1,0 +1,23 @@
+Since we want to use Monkey to interact with the device simulating a normal user rooting the decie to run monkey on device or keeping the Device connected via USB to PC which will charge the device is not an option.
+
+Hence we need to connect to the Device over WiFi and run the Monkey Script
+Steps:
+1. Make sure both your computer and Android device are on the same Wifi network.
+2. Connect the Android device with the computer using your USB cable.
+   Check by running:
+   adb usb
+   adb devices
+3. Restart adb in tcpip mode by running
+   adb tcpip 5556
+4. Find out the IP address of the Android device. 
+   Try $ adb shell netcfg
+5. Connect to your device, using
+   adb connect <device-ip>:5556
+6. Check by:
+   adb devices
+7. Remove the USB cable and it should already be connected to mobile, If not, reconnect using:
+   adb connect <device-ip>:5556
+8. Check that the USB is disconnected and if run:
+   adb devices
+   We should see our mobile device
+
