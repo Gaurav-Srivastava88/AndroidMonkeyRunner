@@ -3,32 +3,21 @@ import commands
 import sys
 import random
 
+sample_apps = {
+    "com.facebook.orca":"com.facebook.orca/.auth.StartScreenActivity",
+    "com.wishabi.flipp":"com.wishabi.flipp/.app.LauncherActivity",
+    "com.bhvr.lhh":"com.bhvr.lhh/com.bhvr.urlschememanagementlibrary.UrlSchemeManagement",
+    "com.erepubliklabs.worldatwar":"com.erepubliklabs.worldatwar/com.prime31.UnityPlayerNativeActivity",
+    "com.kiloo.subwaysurf":"com.kiloo.subwaysurf/com.kiloo.unityutilities.UnityPluginActivity",
+    "com.google.android.apps.fireball":"com.google.android.apps.fireball/.ui.conversationlist.ConversationListActivity",
+    "com.hulu.plus":"com.hulu.plus/com.hulu.plusx.activity.Root",
+    "com.cmcm.live":"com.cmcm.live/com.cmcm.cmlive.activity.SplashActivity",
+    "com.pandora.android":"com.pandora.android/.Main",
+    "kik.android":"kik.android/.chat.activity.IntroActivity",
+    "air.com.hypah.io.slither":"air.com.hypah.io.slither/.AppEntry"
+}
 
-def get_launcher_activity(package_name):
-    tmp = device.shell('pm dump ' + package_name + ' | grep -A 1 MAIN | grep -i -w ' + package_name) 
-    #print tmp
 
-    print tmp
-    
-    for c in tmp.split(" "):
-        if package_name in c:
-            print c
-            launcher_activity = c.split()[0]
-            print launcher_activity
-            break
-    return launcher_activity
-	
-	
-def get_rand_app(installed_packages):
-    all_apps = installed_packages.split()
-    max = len(all_apps)
-	
-    sample_no = random.sample(range(1, max), 5)
-    sample_apps = {}
-    for no in sample_no:
-        sample_apps[all_apps[no]] = ""
-    return sample_apps    
-    
 def stop_app(package_name):
     # Simulates Closing an application by user
     MonkeyRunner.sleep(5)
@@ -44,62 +33,70 @@ def remove_one_recent_app():
     device.drag((350, 620), (13, 620), 0.5, 50)
 
 
+def launch_app(app_launcher_activity):
+    print "launching " + app_launcher_activity
+    device.startActivity(component=app_launcher_activity)
+
+
+def do_random_keystrokes():
+    MonkeyRunner.sleep(1)
+    device.touch(591, 60, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.drag((650, 620), (13, 620), 0.5, 50)
+    MonkeyRunner.sleep(1)
+    device.touch(791, 491, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.drag((35, 620), (713, 620), 0.5, 50)
+    MonkeyRunner.sleep(1)
+    device.touch(0, 500, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(200, 120, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(100, 520, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(391, 1260, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.drag((450, 320), (13, 620), 0.5, 50)
+    MonkeyRunner.sleep(1)
+    device.touch(191, 491, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.drag((235, 620), (713, 620), 0.5, 50)
+    MonkeyRunner.sleep(1)
+    device.touch(300, 10, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(200, 120, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(100, 320, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(491, 260, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.drag((250, 620), (13, 620), 0.5, 50)
+    MonkeyRunner.sleep(1)
+    device.touch(491, 491, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.drag((335, 620), (713, 620), 0.5, 50)
+    MonkeyRunner.sleep(1)
+    device.touch(0, 180, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(200, 120, MonkeyDevice.DOWN_AND_UP)
+    MonkeyRunner.sleep(1)
+    device.touch(100, 320, MonkeyDevice.DOWN_AND_UP)
+        
+    
 # starting script
 print "start"
 
 # connection to the current device, and return a MonkeyDevice object
 device = MonkeyRunner.waitForConnection()
 
-installed_packages = device.shell('pm list packages -f -3')
-
-sampled_apps = get_rand_app(installed_packages)
-
-testing_apps = {}
-
-for app in sampled_apps:
-    package_name = app.split("=")[1]
-    print package_name
-    testing_apps[package_name] = get_launcher_activity(package_name)
-
-print testing_apps
-
-'''
-for app in testing_apps:
-    device.startActivity(component=testing_apps[app])
-    MonkeyRunner.sleep(5)
-
-#stop_app('com.erigo.cowise')
-
-MonkeyRunner.sleep(5)
-remove_one_recent_app()
-'''
-
-# List all packages installed
-'''
-for app in installed_packages.split():
-    apk_path = device.shell('pm path ' + package_name)
-    if apk_path.startswith('package:'):
-        print package_name + " already installed."
-        print "Apk Path is " + apk_path.split(":")[1]
-    else:
-        print package_name + " not installed"
-    MonkeyRunner.sleep(2)
-''' 
-'''
-apk_path = device.shell('pm path com.erigo.cowise')
-if apk_path.startswith('package:'):
-    print "Cowise already installed."
-else:
-    print "Cowise not installed, installing APKs..."
-    device.installPackage('myapp.apk')
-
-print "launching myapp..."
-device.startActivity(component='com.erigo.cowise/com.erigo.cowise.SplashScreen')
-
-#screenshot
-MonkeyRunner.sleep(10)
-
-#sending an event which simulate a click on the menu button
-device.touch(591, 1660, MonkeyDevice.DOWN_AND_UP)
-'''
+while(1):
+    for app in sample_apps:
+        launch_app(sample_apps[app])
+        MonkeyRunner.sleep(8)
+        do_random_keystrokes()
+        MonkeyRunner.sleep(2)
+        stop_app(app)
+        MonkeyRunner.sleep(5)
+        remove_one_recent_app()
+    
 print "end of script"
