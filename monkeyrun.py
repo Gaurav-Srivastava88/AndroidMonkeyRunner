@@ -89,7 +89,9 @@ print "start"
 # connection to the current device, and return a MonkeyDevice object
 device = MonkeyRunner.waitForConnection()
 
-while(1):
+i=0
+while(i<1):
+    i = i+1
     for app in sample_apps:
         launch_app(sample_apps[app])
         MonkeyRunner.sleep(8)
