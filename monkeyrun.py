@@ -91,7 +91,7 @@ print "start"
 device = MonkeyRunner.waitForConnection()
 
 i=0
-while(i < 1):
+while(i < 50):
     i = i+1
     for app in sample_apps:
         launch_app(sample_apps[app])
