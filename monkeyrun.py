@@ -6,15 +6,16 @@ import random
 sample_apps = {
     "com.facebook.orca":"com.facebook.orca/.auth.StartScreenActivity",
     "com.wishabi.flipp":"com.wishabi.flipp/.app.LauncherActivity",
-    "com.bhvr.lhh":"com.bhvr.lhh/com.bhvr.urlschememanagementlibrary.UrlSchemeManagement",
-    "com.erepubliklabs.worldatwar":"com.erepubliklabs.worldatwar/com.prime31.UnityPlayerNativeActivity",
-    "com.kiloo.subwaysurf":"com.kiloo.subwaysurf/com.kiloo.unityutilities.UnityPluginActivity",
-    "com.google.android.apps.fireball":"com.google.android.apps.fireball/.ui.conversationlist.ConversationListActivity",
-    "com.hulu.plus":"com.hulu.plus/com.hulu.plusx.activity.Root",
-    "com.cmcm.live":"com.cmcm.live/com.cmcm.cmlive.activity.SplashActivity",
     "com.pandora.android":"com.pandora.android/.Main",
-    "kik.android":"kik.android/.chat.activity.IntroActivity",
-    "air.com.hypah.io.slither":"air.com.hypah.io.slither/.AppEntry"
+    
+    #"com.bhvr.lhh":"com.bhvr.lhh/com.bhvr.urlschememanagementlibrary.UrlSchemeManagement",
+    #"com.erepubliklabs.worldatwar":"com.erepubliklabs.worldatwar/com.prime31.UnityPlayerNativeActivity",
+    #"com.kiloo.subwaysurf":"com.kiloo.subwaysurf/com.kiloo.unityutilities.UnityPluginActivity",
+    #"com.google.android.apps.fireball":"com.google.android.apps.fireball/.ui.conversationlist.ConversationListActivity",
+    #"com.hulu.plus":"com.hulu.plus/com.hulu.plusx.activity.Root",
+    #"com.cmcm.live":"com.cmcm.live/com.cmcm.cmlive.activity.SplashActivity",
+    #"air.com.hypah.io.slither":"air.com.hypah.io.slither/.AppEntry"
+    "kik.android":"kik.android/.chat.activity.IntroActivity"
 }
 
 
@@ -90,7 +91,7 @@ print "start"
 device = MonkeyRunner.waitForConnection()
 
 i=0
-while(i<1):
+while(i < 1):
     i = i+1
     for app in sample_apps:
         launch_app(sample_apps[app])
