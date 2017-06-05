@@ -1,105 +1,54 @@
-from com.android.monkeyrunner import MonkeyRunner, MonkeyDevice
-import commands
-import sys
-import random
+#! /usr/bin
 
-sample_apps = {
-    "com.facebook.orca":"com.facebook.orca/.auth.StartScreenActivity",
-    "com.wishabi.flipp":"com.wishabi.flipp/.app.LauncherActivity",
-    "com.pandora.android":"com.pandora.android/.Main",
-    
-    #"com.bhvr.lhh":"com.bhvr.lhh/com.bhvr.urlschememanagementlibrary.UrlSchemeManagement",
-    #"com.erepubliklabs.worldatwar":"com.erepubliklabs.worldatwar/com.prime31.UnityPlayerNativeActivity",
-    #"com.kiloo.subwaysurf":"com.kiloo.subwaysurf/com.kiloo.unityutilities.UnityPluginActivity",
-    #"com.google.android.apps.fireball":"com.google.android.apps.fireball/.ui.conversationlist.ConversationListActivity",
-    #"com.hulu.plus":"com.hulu.plus/com.hulu.plusx.activity.Root",
-    #"com.cmcm.live":"com.cmcm.live/com.cmcm.cmlive.activity.SplashActivity",
-    #"air.com.hypah.io.slither":"air.com.hypah.io.slither/.AppEntry"
-    "kik.android":"kik.android/.chat.activity.IntroActivity"
-}
+import threading
+import os
+from util import utility
+from interact_apps import interact_with_apps
 
 
-def stop_app(package_name):
-    # Simulates Closing an application by user
-    MonkeyRunner.sleep(5)
-        
-    device.shell('am force-stop ' + package_name)
+class monkeyThread (threading.Thread):
+    def __init__(self, device_name):
+        self.device_name = device_name
+        threading.Thread.__init__(self)
+
+    def run(self):
+        interact_with_apps.initialize_device_for_testing(self.device_name)
+
+        apk_names = [fileName for fileName in os.listdir("apps") if fileName.endswith(".apk")]
+
+        for apk in apk_names:
+            # Find the app id for the apk file. For example: PrivacyProxy.apk, io.privacyproxy
+            app_id = interact_with_apps.get_app_id(apk)
+            print 'Running tests for ' + apk
+            print app_id
+
+            # Once we have the app id check is app is already installed otherwise install using the apk file
+            interact_with_apps.check_app_installed(app_id, apk)
+
+            # After the previous step the app is now installed on the device and we can ask monkey to run it using app id
+            # and do random strokes once app is launched
+            interact_with_apps.initialize_test(app_id)
 
 
-def remove_one_recent_app():
-    MonkeyRunner.sleep(2)
-    device.press('KEYCODE_APP_SWITCH', MonkeyDevice.DOWN_AND_UP)
+def main():
+    # starting script
+    print "start of script \n"
 
-    MonkeyRunner.sleep(1)
-    device.drag((350, 620), (13, 620), 0.5, 50)
+    # Get all devices connected to laptop via USB
+    connected_devices = utility.get_connected_devices()
+    # print 'device ids: \n' + connected_devices
 
+    threads = []
+    for device in connected_devices:
+        print 'starting for Device: ' + device
+        thread = monkeyThread(device)
+        thread.start()
+        threads.append(thread)
 
-def launch_app(app_launcher_activity):
-    print "launching " + app_launcher_activity
-    device.startActivity(component=app_launcher_activity)
+    for thread in threads:
+        thread.join()
 
+    print "\nend of script"
 
-def do_random_keystrokes():
-    MonkeyRunner.sleep(1)
-    device.touch(591, 60, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.drag((650, 620), (13, 620), 0.5, 50)
-    MonkeyRunner.sleep(1)
-    device.touch(791, 491, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.drag((35, 620), (713, 620), 0.5, 50)
-    MonkeyRunner.sleep(1)
-    device.touch(0, 500, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(200, 120, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(100, 520, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(391, 1260, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.drag((450, 320), (13, 620), 0.5, 50)
-    MonkeyRunner.sleep(1)
-    device.touch(191, 491, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.drag((235, 620), (713, 620), 0.5, 50)
-    MonkeyRunner.sleep(1)
-    device.touch(300, 10, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(200, 120, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(100, 320, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(491, 260, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.drag((250, 620), (13, 620), 0.5, 50)
-    MonkeyRunner.sleep(1)
-    device.touch(491, 491, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.drag((335, 620), (713, 620), 0.5, 50)
-    MonkeyRunner.sleep(1)
-    device.touch(0, 180, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(200, 120, MonkeyDevice.DOWN_AND_UP)
-    MonkeyRunner.sleep(1)
-    device.touch(100, 320, MonkeyDevice.DOWN_AND_UP)
-        
-    
-# starting script
-print "start"
-
-# connection to the current device, and return a MonkeyDevice object
-device = MonkeyRunner.waitForConnection()
-
-i=0
-while(i < 50):
-    i = i+1
-    for app in sample_apps:
-        launch_app(sample_apps[app])
-        MonkeyRunner.sleep(8)
-        do_random_keystrokes()
-        MonkeyRunner.sleep(2)
-        stop_app(app)
-        MonkeyRunner.sleep(5)
-        remove_one_recent_app()
-    
-print "end of script"
+if __name__ == '__main__':
+    main()
